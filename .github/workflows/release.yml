@@ -1,0 +1,33 @@
+name: Release Rust Package
+permissions:
+  contents: write
+on:
+  workflow_run:
+    workflows: ["Build, Test and Check"]
+    types:
+      - completed
+    branches:
+      - main
+jobs:
+  release:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-release
+        run: cargo install cargo-release
+      - name: Bump version and tag release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cargo release version --execute --no-confirm patch
+          cargo release commit --execute --no-confirm
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main

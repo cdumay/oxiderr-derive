@@ -1,0 +1,48 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "cargo"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "dev-dependencies"
+      ],
+      "groupName": "Rust dependencies",
+      "requiredStatusChecks": ["Build, Test and Check"],
+      "automerge": true,
+      "automergeType": "pr",
+      "updateTypes": [
+        "patch",
+        "minor"
+      ],
+      "labels": [
+        "dependencies",
+        "dev-dependencies",
+        "automerge"
+      ]
+    },
+    {
+      "matchManagers": [
+        "cargo"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "dev-dependencies"
+      ],
+      "groupName": "Rust dependencies major update",
+      "automerge": false,
+      "updateTypes": [
+        "major"
+      ],
+      "labels": [
+        "dependencies-major"
+      ]
+    }
+  ],
+  "stabilityDays": 3,
+  "dependencyDashboard": false
+}
