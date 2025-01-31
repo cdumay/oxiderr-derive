@@ -1,0 +1,25 @@
+name: Release Rust Package
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install cargo-release
+        run: cargo install cargo-release
+      - name: Bump version and tag release
+        run: |
+          cargo release version --execute --no-confirm
+          git push --follow-tags
+      - name: Login to Cargo Registry
+        run: cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Publish to crates.io
+        run: cargo publish --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
